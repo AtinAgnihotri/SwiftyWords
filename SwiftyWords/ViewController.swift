@@ -18,6 +18,11 @@ class ViewController: UIViewController {
     var clearButton: UIButton!
 
     var score = 0
+    var level = 1
+//    var letters = [String]()
+    
+    var solutions = [String]()
+    var activatedButtons = [UIButton]()
 
     override func loadView() {
         createSuperView()
@@ -49,7 +54,6 @@ class ViewController: UIViewController {
         allConstraints += getInputButtonConstraints()
         allConstraints += getButtonContainerViewConstraints()
         NSLayoutConstraint.activate(allConstraints)
-//        print(allConstraints)
     }
     
     func addScoreLabel() {
@@ -112,11 +116,8 @@ class ViewController: UIViewController {
     func addCurrentAnswerTF() {
         currentAnswerTF = UITextField()
         currentAnswerTF.translatesAutoresizingMaskIntoConstraints = false
-//        currentAnswerTF.attributedPlaceholder = NSAttributedString.init(string: "Tap letters to submit", attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 56)])
         currentAnswerTF.placeholder = "Tap letters to submit"
         currentAnswerTF.textAlignment = .center
-//        currentAnswerTF.setValue(UIFont.systemFont(ofSize: 15),forKeyPath: "_placeholderLabel.font")
-//        currentAnswerTF.placeholderL
         currentAnswerTF.font = UIFont.systemFont(ofSize: 56)
         currentAnswerTF.isUserInteractionEnabled = false
         view.addSubview(currentAnswerTF)
@@ -135,12 +136,14 @@ class ViewController: UIViewController {
         submitButton.translatesAutoresizingMaskIntoConstraints = false
         submitButton.setTitle("SUBMIT", for: .normal)
         submitButton.titleLabel?.font = UIFont.systemFont(ofSize: 34)
+        submitButton.addTarget(self, action: #selector(submitTapped), for: .touchUpInside)
         view.addSubview(submitButton)
         
         clearButton = UIButton(type: .system)
         clearButton.translatesAutoresizingMaskIntoConstraints = false
         clearButton.setTitle("CLEAR", for: .normal)
         clearButton.titleLabel?.font = UIFont.systemFont(ofSize: 34)
+        clearButton.addTarget(self, action: #selector(clearTapped), for: .touchUpInside)
         view.addSubview(clearButton)
 //        print("Added Submit and Clear Button")
     }
@@ -179,6 +182,7 @@ class ViewController: UIViewController {
         letterButton.setTitle("WWW", for: .normal)
         let frame = CGRect(x: column * width, y: row * height, width: width, height: height)
         letterButton.frame = frame
+        letterButton.addTarget(self, action: #selector(letterTapped), for: .touchUpInside)
         buttonsContainterView.addSubview(letterButton)
         letterButtons.append(letterButton)
     }
@@ -194,9 +198,94 @@ class ViewController: UIViewController {
         ]
     }
     
+    
+    
+    func loadLevel(_ level: Int) {
+        let levelName = "level\(level)"
+        var clueString = ""
+        var solutionsString = ""
+        var letters = [String]()
+        
+        if let url = Bundle.main.url(forResource: levelName, withExtension: "txt") {
+            if let levelData = try? String(contentsOf: url) {
+                print(levelData)
+                var lines = levelData.components(separatedBy: "\n")
+                lines.shuffle()
+                for (index, line) in lines.enumerated() {
+                    let parts = line.components(separatedBy: ":")
+                    let answer = parts[0]
+                    let clue = parts[1]
+                    
+                    clueString += "\(index + 1).\(clue)\n"
+                    let solutionWord = answer.replacingOccurrences(of: "|", with: "")
+                    solutionsString += "\(solutionWord.count) letters\n"
+                    solutions.append(solutionWord)
+                    
+                    letters += answer.components(separatedBy: "|")
+                    
+                }
+            } else {
+                fatalError("⚠️ Could not load data from level file")
+            }
+        } else {
+            fatalError("⚠️ Could not load level file")
+        }
+        
+        cluesLabel.text = clueString.trimmingCharacters(in: .whitespacesAndNewlines)
+        answersLabel.text = solutionsString.trimmingCharacters(in: .whitespacesAndNewlines)
+        addLoadedLetters(letters)
+    }
+    
+    
+    func addLoadedLetters(_ letters: [String]) {
+        guard letters.count == letterButtons.count else {
+            fatalError("⚠️ Insufficient letters loaded from level file")
+        }
+        let letters = letters.shuffled()
+        for (index, letter) in letters.enumerated() {
+            letterButtons[index].setTitle(letter, for: .normal)
+        }
+    }
+    
+//    func addLoadedLetters(_ letters: [String]) {
+//        letterButtons.shuffle()
+//        var indx = 0
+//        for letter in letters {
+//            while indx != letterButtons.count {
+//                let button = letterButtons[indx]
+//                if button.
+//            }
+//        }
+//    }
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        loadLevel(level)
+    }
+    
+    @objc func submitTapped(_ sender: UIButton) {
+        
+    }
+    
+    @objc func clearTapped(_ sender: UIButton) {
+        
+    }
+    
+    @objc func letterTapped(_ sender: UIButton) {
+        
+    }
+    
+    func showAlert(title: String, message: String) {
+        let ac = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        present(ac, animated: true)
+    }
+    
+    func showError(title: String, message: String) {
+        showAlert(title: "⚠️ " + title , message: message)
     }
 
 

@@ -13,6 +13,8 @@
 		85B2256E269FE34100A698A8 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 85B2256C269FE34100A698A8 /* Main.storyboard */; };
 		85B22570269FE34600A698A8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 85B2256F269FE34600A698A8 /* Assets.xcassets */; };
 		85B22573269FE34600A698A8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 85B22571269FE34600A698A8 /* LaunchScreen.storyboard */; };
+		85B2257D26A2AF2A00A698A8 /* level1.txt in Resources */ = {isa = PBXBuildFile; fileRef = 85B2257B26A2AF2A00A698A8 /* level1.txt */; };
+		85B2257E26A2AF2B00A698A8 /* level2.txt in Resources */ = {isa = PBXBuildFile; fileRef = 85B2257C26A2AF2A00A698A8 /* level2.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +26,8 @@
 		85B2256F269FE34600A698A8 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		85B22572269FE34600A698A8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		85B22574269FE34600A698A8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		85B2257B26A2AF2A00A698A8 /* level1.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = level1.txt; sourceTree = "<group>"; };
+		85B2257C26A2AF2A00A698A8 /* level2.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = level2.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +60,7 @@
 		85B22565269FE34100A698A8 /* SwiftyWords */ = {
 			isa = PBXGroup;
 			children = (
+				85B2257A26A2AEFA00A698A8 /* Levels */,
 				85B22566269FE34100A698A8 /* AppDelegate.swift */,
 				85B22568269FE34100A698A8 /* SceneDelegate.swift */,
 				85B2256A269FE34100A698A8 /* ViewController.swift */,
@@ -65,6 +70,15 @@
 				85B22574269FE34600A698A8 /* Info.plist */,
 			);
 			path = SwiftyWords;
+			sourceTree = "<group>";
+		};
+		85B2257A26A2AEFA00A698A8 /* Levels */ = {
+			isa = PBXGroup;
+			children = (
+				85B2257B26A2AF2A00A698A8 /* level1.txt */,
+				85B2257C26A2AF2A00A698A8 /* level2.txt */,
+			);
+			path = Levels;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -124,7 +138,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				85B2257E26A2AF2B00A698A8 /* level2.txt in Resources */,
 				85B22573269FE34600A698A8 /* LaunchScreen.storyboard in Resources */,
+				85B2257D26A2AF2A00A698A8 /* level1.txt in Resources */,
 				85B22570269FE34600A698A8 /* Assets.xcassets in Resources */,
 				85B2256E269FE34100A698A8 /* Main.storyboard in Resources */,
 			);
