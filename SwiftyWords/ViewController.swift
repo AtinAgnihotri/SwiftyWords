@@ -17,9 +17,12 @@ class ViewController: UIViewController {
     var submitButton: UIButton!
     var clearButton: UIButton!
 
-    var score = 0
+    var score = 0 {
+        didSet {
+            scoreLabel.text = "Score: \(score)"
+        }
+    }
     var level = 1
-//    var letters = [String]()
     
     var solutions = [String]()
     var activatedButtons = [UIButton]()
@@ -145,7 +148,6 @@ class ViewController: UIViewController {
         clearButton.titleLabel?.font = UIFont.systemFont(ofSize: 34)
         clearButton.addTarget(self, action: #selector(clearTapped), for: .touchUpInside)
         view.addSubview(clearButton)
-//        print("Added Submit and Clear Button")
     }
     
     func getInputButtonConstraints() -> [NSLayoutConstraint]{
@@ -182,6 +184,8 @@ class ViewController: UIViewController {
         letterButton.setTitle("WWW", for: .normal)
         let frame = CGRect(x: column * width, y: row * height, width: width, height: height)
         letterButton.frame = frame
+        letterButton.layer.borderWidth = 1
+        letterButton.layer.borderColor = UIColor.lightGray.cgColor
         letterButton.addTarget(self, action: #selector(letterTapped), for: .touchUpInside)
         buttonsContainterView.addSubview(letterButton)
         letterButtons.append(letterButton)
@@ -200,7 +204,7 @@ class ViewController: UIViewController {
     
     
     
-    func loadLevel(_ level: Int) {
+    func loadLevel() {
         let levelName = "level\(level)"
         var clueString = ""
         var solutionsString = ""
@@ -246,48 +250,125 @@ class ViewController: UIViewController {
             letterButtons[index].setTitle(letter, for: .normal)
         }
     }
-    
-//    func addLoadedLetters(_ letters: [String]) {
-//        letterButtons.shuffle()
-//        var indx = 0
-//        for letter in letters {
-//            while indx != letterButtons.count {
-//                let button = letterButtons[indx]
-//                if button.
-//            }
-//        }
-//    }
-    
-    
-    
+   
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        loadLevel(level)
+        loadLevel()
+        print("tsla: \(isActualWord("tsla"))")
     }
     
     @objc func submitTapped(_ sender: UIButton) {
-        
+        if let answer = currentAnswerTF.text {
+            if let solutionPosition = solutions.firstIndex(of: answer) {
+                score += 3
+//                scoreLabel.text = "Score: \(score)"
+                updateAnswerLabel(for: solutionPosition, with: answer)
+                clearCurrentAnswerLabel()
+                
+                if solvedAllQuestions() {
+                    if level < 2 {
+                        showLevelUpAlert()
+                    } else {
+                        let ok = UIAlertAction(title: "OK", style: .default)
+                        showAlert(title: "Game Over", message: "Nice Playing", action: ok)
+                    }
+                }
+                return
+            }
+        }
+        score -= 1
+        clearWrongAnswer(showAlert: true)
+    }
+    
+    func updateAnswerLabel(for index: Int, with answer: String) {
+        var splitAnswers = answersLabel.text?.components(separatedBy: "\n")
+        splitAnswers?[index] = answer
+        answersLabel.text = splitAnswers?.joined(separator: "\n")
     }
     
     @objc func clearTapped(_ sender: UIButton) {
-        
+        clearWrongAnswer()
     }
     
     @objc func letterTapped(_ sender: UIButton) {
-        
+        guard let buttonTitle = sender.titleLabel?.text else { return }
+        guard activatedButtons.count < 4 else { return }
+        currentAnswerTF.text = currentAnswerTF.text?.appending(buttonTitle)
+        activatedButtons.append(sender)
+        sender.isHidden = true
     }
     
-    func showAlert(title: String, message: String) {
+    func isActualWord(_ word: String) -> Bool {
+        let checker = UITextChecker()
+        let range = NSRange(location: 0, length: word.utf16.count)
+        let misspelledRange = checker.rangeOfMisspelledWord(in: word, range: range, startingAt: 0, wrap: false, language: "en")
+
+        return misspelledRange.location == NSNotFound
+    }
+    
+    func clearWrongAnswer(showAlert: Bool = false) {
+        if showAlert {
+            var errorMsg: String
+            if isActualWord(currentAnswerTF.text?.lowercased() ?? "") {
+                errorMsg = "That's incorrect, give it another try"
+            } else  {
+                errorMsg = "Come on! That's not even a word"
+            }
+            showErrorAlert(title: "Try Again", message: errorMsg)
+        }
+        for button in activatedButtons {
+            button.isHidden = false
+        }
+        clearCurrentAnswerLabel()
+    }
+    
+    func clearCurrentAnswerLabel() {
+        activatedButtons.removeAll()
+        currentAnswerTF.text = ""
+    }
+    
+    func levelUp (_ action: UIAlertAction) {
+        level += 1
+        solutions.removeAll(keepingCapacity: true)
+        loadLevel()
+        for button in letterButtons {
+            button.isHidden = false
+        }
+    }
+    
+    func solvedAllQuestions() -> Bool {
+        guard let answerLabelText = answersLabel.text else {
+            return false
+        }
+        for solution in solutions {
+            if !answerLabelText.contains(solution) {
+                return false
+            }
+        }
+        return true
+    }
+    
+    
+    func showAlert(title: String, message: String, action: UIAlertAction) {
         let ac = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        ac.addAction(UIAlertAction(title: "OK", style: .default))
+        ac.addAction(action)
         present(ac, animated: true)
     }
     
-    func showError(title: String, message: String) {
-        showAlert(title: "⚠️ " + title , message: message)
+    func showInfoAlert(title: String, message: String) {
+        let ok = UIAlertAction(title: "OK", style: .default)
+        showAlert(title: title, message: message, action: ok)
     }
-
+    
+    func showLevelUpAlert() {
+        let letsGo = UIAlertAction(title: "Let's go", style: .default, handler: levelUp)
+        showAlert(title: "Well done!", message: "Ready for the next level?", action: letsGo)
+    }
+    
+    func showErrorAlert(title: String, message: String) {
+        showInfoAlert(title: "⚠️ " + title , message: message)
+    }
 
 }
 
