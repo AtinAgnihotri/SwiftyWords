@@ -204,7 +204,7 @@ class ViewController: UIViewController {
     
     
     
-    func loadLevel() {
+    @objc func loadLevel() {
         let levelName = "level\(level)"
         var clueString = ""
         var solutionsString = ""
@@ -235,9 +235,12 @@ class ViewController: UIViewController {
             fatalError("⚠️ Could not load level file")
         }
         
-        cluesLabel.text = clueString.trimmingCharacters(in: .whitespacesAndNewlines)
-        answersLabel.text = solutionsString.trimmingCharacters(in: .whitespacesAndNewlines)
-        addLoadedLetters(letters)
+        DispatchQueue.main.async { [weak self] in
+            self?.cluesLabel.text = clueString.trimmingCharacters(in: .whitespacesAndNewlines)
+            self?.answersLabel.text = solutionsString.trimmingCharacters(in: .whitespacesAndNewlines)
+            self?.addLoadedLetters(letters)
+            print("End of loadLevel")
+        }
     }
     
     
@@ -254,18 +257,18 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        loadLevel()
-        print("tsla: \(isActualWord("tsla"))")
+        performSelector(inBackground: #selector(loadLevel), with: nil)
+        print("End of viewDidLoad")
+//        loadLevel()
+//        print("tsla: \(isActualWord("tsla"))")
     }
     
     @objc func submitTapped(_ sender: UIButton) {
         if let answer = currentAnswerTF.text {
             if let solutionPosition = solutions.firstIndex(of: answer) {
                 score += 3
-//                scoreLabel.text = "Score: \(score)"
                 updateAnswerLabel(for: solutionPosition, with: answer)
                 clearCurrentAnswerLabel()
-                
                 if solvedAllQuestions() {
                     if level < 2 {
                         showLevelUpAlert()
