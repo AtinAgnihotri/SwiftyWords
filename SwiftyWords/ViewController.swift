@@ -299,7 +299,12 @@ class ViewController: UIViewController {
         guard activatedButtons.count < 4 else { return }
         currentAnswerTF.text = currentAnswerTF.text?.appending(buttonTitle)
         activatedButtons.append(sender)
-        sender.isHidden = true
+        
+        UIView.animate(withDuration: 0.3, animations: {
+            sender.alpha = 0
+        }) { fin in
+            sender.isHidden = true
+        }
     }
     
     func isActualWord(_ word: String) -> Bool {
@@ -321,7 +326,11 @@ class ViewController: UIViewController {
             showErrorAlert(title: "Try Again", message: errorMsg)
         }
         for button in activatedButtons {
-            button.isHidden = false
+            UIView.animate(withDuration: 0.3, animations: {
+                button.alpha = 1
+            }) { fin in
+                button.isHidden = false
+            }
         }
         clearCurrentAnswerLabel()
     }
